@@ -80,6 +80,13 @@ jobs:
             /tmp/tenable-results.sarif > /tmp/tenable-results-fixed.sarif
           sudo mv /tmp/tenable-results-fixed.sarif /tmp/tenable-results.sarif
           ls -l /tmp/tenable-results.sarif
+
+      # ✅ Upload SARIF file as an artifact for download
+      - name: Upload SARIF file as an artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: tenable-sarif-report
+          path: /tmp/tenable-results.sarif
      
       - name: Upload SARIF report to GitHub
         uses: github/codeql-action/upload-sarif@v3
