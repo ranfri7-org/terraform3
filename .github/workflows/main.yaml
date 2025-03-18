@@ -1,4 +1,4 @@
-#05
+#07
 name: Terraform Deployment
 
 on:
@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
   id-token: write
+  security-events: write  # Required for uploading SARIF results
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }} 
@@ -51,13 +52,33 @@ jobs:
         id: plan
         run: terraform plan -out=tfplan
 
+      # ✅ Run Tenable scan and generate SARIF report
       - name: Scan with Tenable Cloud Security
         uses: tenable/cloud-security-actions/iac/scan@v1
         with:
           api-token: ${{ secrets.TENABLE_API_TOKEN }}
           api-url: https://us2.app.ermetic.com
           paths: AWS
-          #fail-on-min-severity: high
+          output-file-formats: sarif
+          output-file-name: tenable-results
+
+      # ✅ Debug: Confirm SARIF file exists and check its permissions
+      - name: Check SARIF file owner and permissions
+        run: ls -lah /home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/tenable-results.sarif
+
+      # ✅ Copy SARIF file to a writable directory and fix permissions
+      - name: Copy SARIF file to /tmp and fix permissions
+        run: |
+          sudo cp /home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/tenable-results.sarif /tmp/tenable-results.sarif
+          sudo chmod 644 /tmp/tenable-results.sarif
+          ls -l /tmp/tenable-results.sarif
+
+      # ✅ Upload SARIF report to GitHub Code Scanning
+      - name: Upload SARIF report to GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: /tmp/tenable-results.sarif
+          token: ${{ secrets.GITHUB_TOKEN }}  # Use built-in GitHub token for public repo
 
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
