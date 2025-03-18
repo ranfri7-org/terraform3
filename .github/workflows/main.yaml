@@ -78,9 +78,9 @@ jobs:
         run: |
           jq '.runs[].results[].locations[].physicalLocation.artifactLocation.uri |= sub("https://[^/]*/"; "")' \
             /tmp/tenable-results.sarif > /tmp/tenable-results-fixed.sarif
-          mv /tmp/tenable-results-fixed.sarif /tmp/tenable-results.sarif
+          sudo mv /tmp/tenable-results-fixed.sarif /tmp/tenable-results.sarif
           ls -l /tmp/tenable-results.sarif
-      
+     
       - name: Upload SARIF report to GitHub
         uses: github/codeql-action/upload-sarif@v3
         with:
