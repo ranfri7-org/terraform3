@@ -83,7 +83,7 @@ jobs:
 
       # ✅ Upload SARIF file as an artifact for download
       - name: Upload SARIF file as an artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tenable-sarif-report
           path: /tmp/tenable-results.sarif
