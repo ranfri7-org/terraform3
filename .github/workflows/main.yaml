@@ -70,12 +70,12 @@ jobs:
           sudo chmod 644 /tmp/tenable-results.sarif
           ls -l /tmp/tenable-results.sarif
 
-      - name: Fix SARIF file paths
-        run: |
-          jq '.runs[].results[].locations[].physicalLocation.artifactLocation.uri |= sub(".*/blob/[a-f0-9]+/"; "")' \
-            /tmp/tenable-results.sarif > /tmp/tenable-results-fixed.sarif
-          sudo mv /tmp/tenable-results-fixed.sarif /tmp/tenable-results.sarif
-          ls -l /tmp/tenable-results.sarif
+#      - name: Fix SARIF file paths
+#        run: |
+#          jq '.runs[].results[].locations[].physicalLocation.artifactLocation.uri |= sub(".*/blob/[a-f0-9]+/"; "")' \
+#            /tmp/tenable-results.sarif > /tmp/tenable-results-fixed.sarif
+#          sudo mv /tmp/tenable-results-fixed.sarif /tmp/tenable-results.sarif
+#          ls -l /tmp/tenable-results.sarif
 
       - name: Upload SARIF file as an artifact
         uses: actions/upload-artifact@v4
