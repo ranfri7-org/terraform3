@@ -65,6 +65,8 @@ jobs:
         run: |
           jq '.runs[].results[].locations[].physicalLocation.artifactLocation.uri |= sub(".*/blob/[a-f0-9]+/"; "")' \
             ../tenable-results.sarif > ../tenable-results-fixed.sarif
+          echo "Result count:"
+          jq '.runs[].results | length' ../tenable-results-fixed.sarif
 
       - name: Upload SARIF report to GitHub
         uses: github/codeql-action/upload-sarif@v3
